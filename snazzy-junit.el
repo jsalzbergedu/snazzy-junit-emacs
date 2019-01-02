@@ -695,90 +695,99 @@ add the element id if there isn't one already.")
             s)
           "\n"))
 
-;; (defclass szj-view (szj-container)
-;;   ((running-title :initform (szj-title :text "Snazzy Junit Runner -- Running Test(s)")
-;;                   :type szj-title
-;;                   :custom szj-title
-;;                   :reader szj-running-title
-;;                   :allocation :class
-;;                   :documentation "The first line in the document")
-;;    (progress-label :initform (szj-label :text "progress")
-;;                    :type szj-label
-;;                    :custom szj-label
-;;                    :reader szj-progress-label
-;;                    :allocation :class
-;;                    :documentation "The label: progress:.")
-;;    (progress-progress-indicator :initarg :progress-progress-indicator
-;;                                 :initform (szj-progress-indicator)
-;;                                 :type szj-progress-indicator
-;;                                 :custom szj-progress-indicator
-;;                                 :accessor szj-progress-progress-indicator
-;;                                 :documentation "The indicator for the execution progress")
-;;    (completed-title :initform (szj-title :text "Snazzy Junit Runner -- Finished Running Test(s)")
-;;                     :type szj-title
-;;                     :custom szj-title
-;;                     :accessor szj-completed-title
-;;                     :allocation :class
-;;                     :documentation "The title displayed when the test runner is finished running tests.")
-;;    (completed-label :initform (szj-label :text "status")
-;;                     :type szj-label
-;;                     :custom szj-label
-;;                     :reader szj-completed-label
-;;                     :allocation :class
-;;                     :documentation "The label: status:")
-;;    (completed-progress-indicator :initarg :completed-progress-indicator
-;;                                  :initform nil
-;;                                  :type (or null szj-progress-indicator)
-;;                                  :custom (or null szj-progress-indicator)
-;;                                  :accessor szj-completed-progress-indicator
-;;                                  :documentation "The progress indicator after the tests have been completed.")
-;;    (test-suites-label :initform (szj-label :text "Test Suites")
-;;                       :type szj-label
-;;                       :custom szj-label
-;;                       :accessor szj-test-suites-label
-;;                       :allocation :class
-;;                       :documentation "The label for the test suites")
-;;    (test-suites :initarg :test-suites
-;;                 :initform nil
-;;                 :type (or null list)
-;;                 :custom (or null list)
-;;                 :accessor szj-test-suites
-;;                 :documentation "The test suites."))
-;;   "The model of the document.")
+(defclass szj-view (szj-container)
+  ((running-title :initform (szj-title :text "Snazzy Junit Runner -- Running Test(s)")
+                  :type szj-title
+                  :custom szj-title
+                  :reader szj-running-title
+                  :allocation :class
+                  :documentation "The first line in the document")
+   (progress-label :initform (szj-label :text "progress")
+                   :type szj-label
+                   :custom szj-label
+                   :reader szj-progress-label
+                   :allocation :class
+                   :documentation "The label: progress:.")
+   (progress-progress-indicator :initarg :progress-progress-indicator
+                                :initform (szj-progress-indicator)
+                                :type szj-progress-indicator
+                                :custom szj-progress-indicator
+                                :accessor szj-progress-progress-indicator
+                                :documentation "The indicator for the execution progress")
+   (completed-viewable :initarg :completed-viewable
+                       :initform nil
+                       :type boolean
+                       :custom boolean
+                       :reader szj-completed-viewable
+                       :documentation "Whether the completed area is viewable.")
+   (completed-title :initform (szj-title :text "Snazzy Junit Runner -- Finished Running Test(s)")
+                    :type szj-title
+                    :custom szj-title
+                    :accessor szj-completed-title
+                    :allocation :class
+                    :documentation "The title displayed when the test runner is finished running tests.")
+   (completed-label :initform (szj-label :text "status")
+                    :type szj-label
+                    :custom szj-label
+                    :reader szj-completed-label
+                    :allocation :class
+                    :documentation "The label: status:")
+   (completed-progress-indicator :initarg :completed-progress-indicator
+                                 :initform (szj-progress-indicator)
+                                 :type szj-progress-indicator
+                                 :custom szj-progress-indicator
+                                 :accessor szj-completed-progress-indicator
+                                 :documentation "The progress indicator after the tests have been completed.")
+   (test-suites-viewable :initarg :test-suites-viewable
+                         :initform nil
+                         :type boolean
+                         :custom boolean
+                         :reader szj-test-suites-viewable
+                         :documentation "Whether the test suites are viewable.")
+   (test-suites-label :initform (szj-label :text "Test Suites")
+                      :type szj-label
+                      :custom szj-label
+                      :accessor szj-test-suites-label
+                      :allocation :class
+                      :documentation "The label for the test suites")
+   (test-suites :initarg :test-suites
+                :initform nil
+                :type list
+                :custom list
+                :accessor szj-test-suites
+                :documentation "The test suites."))
+  "The model of the document.")
 
+(cl-defmethod szj-container-allchildren ((container szj-view))
+  (append (list (szj-running-title container)
+                (szj-progress-label container)
+                (szj-progress-progress-indicator container)
+                (szj-completed-title container)
+                (szj-completed-label container)
+                (szj-completed-progress-indicator container)
+                (szj-test-suites-label container))
+          (szj-test-suites container)))
 
-;; (cl-defmethod szj-render-widget ((widget szj-view))
-;;   (concat (szj-render-widget
-;;            (szj-running-title widget))
-;;           "\n"
-;;           (szj-render-widget
-;;            (szj-progress-label widget))
-;;           " "
-;;           (szj-render-widget
-;;            (szj-progress-progress-bar widget))
-;;           " "
-;;           (szj-render-widget
-;;            (szj-progress-progress-percentage widget))
-;;           "\n"
-;;           (when-let ((completed-title (szj-completed-title widget))
-;;                      (completed-label (szj-completed-label widget))
-;;                      (progress-bar (szj-completed-progress-bar widget))
-;;                      (percentage (szj-completed-progress-percentage widget)))
-;;             (concat "\n"
-;;                     (szj-render-widget completed-title)
-;;                     "\n"
-;;                     (szj-render-widget completed-label)
-;;                     "   "
-;;                     (szj-render-widget progress-bar)
-;;                     " "
-;;                     (szj-render-widget percentage)
-;;                     "\n"))
-;;           (when-let ((test-suites-label (szj-test-suites-label widget))
-;;                      (test-suites (szj-test-suites widget)))
-;;             (concat "\n"
-;;                     (szj-render-widget test-suites-label)
-;;                     "\n"
-;;                     (apply #'concat (-map #'szj-render-widget test-suites))))))
+(cl-defmethod szj-container-children ((container szj-view))
+  (append (list (szj-running-title container)
+                "\n"
+                (szj-progress-label container)
+                " "
+                (szj-progress-progress-indicator container)
+                "\n")
+          (when (szj-completed-viewable container)
+            (list "\n"
+                  (szj-completed-title container)
+                  "\n"
+                  (szj-completed-label container)
+                  " "
+                  (szj-completed-progress-indicator container)
+                  "\n"))
+          (when (szj-test-suites-viewable container)
+            (append (list "\n"
+                          (szj-test-suites-label container)
+                          "\n")
+                    (szj-test-suites container)))))
 
 ;; End definition of the test result document
 
